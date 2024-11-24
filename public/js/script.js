@@ -15,11 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentFeature = '';
 
+  // Feature selection logic
   featureList.addEventListener('click', (e) => {
     if (e.target.tagName === 'LI') {
       currentFeature = e.target.dataset.feature;
-
-      console.log('Selected feature:', currentFeature);
 
       switch (currentFeature) {
         case 'google-business':
@@ -49,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Form submission logic
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const userInput = input.value.trim();
@@ -66,16 +66,13 @@ document.addEventListener('DOMContentLoaded', () => {
           payload = { businessName: userInput };
           break;
         case 'on-page-seo':
-          if (!userInput.startsWith('http')) throw new Error('Invalid URL format.');
           payload = { site: userInput };
           break;
         case 'backlinks':
-          if (!userInput.startsWith('http')) throw new Error('Invalid URL format.');
           payload = { site: userInput };
           break;
         case 'keywords-data':
           const keywords = userInput.split(',').map((item) => item.trim());
-          if (keywords.length === 0) throw new Error('At least one keyword is required.');
           payload = { keywords, location_code: 2840, language_name: 'English' };
           break;
         default:
