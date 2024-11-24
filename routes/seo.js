@@ -15,8 +15,17 @@ const getHeaders = () => {
   };
 };
 
+// Helper function to wrap payloads in arrays
+const wrapPayloadInArray = (payload) => {
+  if (!payload || (Array.isArray(payload) && payload.length === 0)) {
+    throw new Error('Payload is empty or invalid.');
+  }
+  return Array.isArray(payload) ? payload : [payload];
+};
+
 // Keywords Data API
 router.post('/keywords-data', async (req, res) => {
+  console.log('Route hit: /keywords-data');
   const { keywords, location_code, language_name = 'English' } = req.body;
   if (!keywords || !Array.isArray(keywords) || !location_code) {
     return res.status(400).json({
@@ -24,11 +33,13 @@ router.post('/keywords-data', async (req, res) => {
     });
   }
   try {
-    const payload = keywords.map((keyword) => ({
-      keyword,
-      location_code,
-      language_name,
-    }));
+    const payload = wrapPayloadInArray(
+      keywords.map((keyword) => ({
+        keyword,
+        location_code,
+        language_name,
+      }))
+    );
     const response = await axios.post(
       `${BASE_URL}/keywords_data/google/search_volume/task_post`,
       payload,
@@ -42,6 +53,7 @@ router.post('/keywords-data', async (req, res) => {
 
 // On-Page SEO API
 router.post('/on-page-seo', async (req, res) => {
+  console.log('Route hit: /on-page-seo');
   const { site, limit = 10 } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
@@ -61,12 +73,13 @@ router.post('/on-page-seo', async (req, res) => {
 
 // Backlinks API
 router.post('/backlinks', async (req, res) => {
+  console.log('Route hit: /backlinks');
   const { site } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
   }
   try {
-    const payload = [{ site }];
+    const payload = wrapPayloadInArray([{ site }]);
     const response = await axios.post(
       `${BASE_URL}/backlinks/task_post`,
       payload,
@@ -80,6 +93,7 @@ router.post('/backlinks', async (req, res) => {
 
 // Google Business Profile API
 router.post('/google-business', async (req, res) => {
+  console.log('Route hit: /google-business');
   const { businessName } = req.body;
   if (!businessName) {
     return res.status(400).json({ error: 'Missing required field: businessName' });
