@@ -14,6 +14,11 @@ const getHeaders = () => {
   };
 };
 
+// Helper function to wrap payload in an array if required
+const wrapPayloadInArray = (payload) => {
+  return Array.isArray(payload) ? payload : [payload];
+};
+
 // Google Business Profile Audit
 router.post('/google-business', async (req, res) => {
   const { businessName } = req.body;
@@ -28,6 +33,7 @@ router.post('/google-business', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Google Business API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -46,6 +52,7 @@ router.post('/on-page-seo', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with On-Page SEO API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -64,6 +71,7 @@ router.post('/competitor-analysis', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Competitor Analysis API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -82,6 +90,7 @@ router.post('/keyword-research', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Keyword Research API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -95,11 +104,12 @@ router.post('/backlink-tracking', async (req, res) => {
   try {
     const response = await axios.post(
       `${BASE_URL}/backlinks/tracking`,
-      { site },
+      wrapPayloadInArray({ site }), // Backlink tracking might expect tasks
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Backlink Tracking API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
