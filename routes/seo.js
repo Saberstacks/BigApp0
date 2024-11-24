@@ -14,11 +14,12 @@ const getHeaders = () => {
   };
 };
 
-// Routes
-
 // Google Business Profile Audit
 router.post('/google-business', async (req, res) => {
   const { businessName } = req.body;
+  if (!businessName) {
+    return res.status(400).json({ error: 'Missing required field: businessName' });
+  }
   try {
     const response = await axios.post(
       `${BASE_URL}/business_data/google_business_profile`,
@@ -27,67 +28,79 @@ router.post('/google-business', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
 // On-Page SEO Analysis
 router.post('/on-page-seo', async (req, res) => {
-  const { websiteUrl } = req.body;
+  const { site, limit = 10 } = req.body;
+  if (!site) {
+    return res.status(400).json({ error: 'Missing required field: site' });
+  }
   try {
     const response = await axios.post(
       `${BASE_URL}/on_page/seo_audit`,
-      { url: websiteUrl },
+      { site, limit },
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
 // Competitor Analysis
 router.post('/competitor-analysis', async (req, res) => {
-  const { keyword } = req.body;
+  const { target, competitor } = req.body;
+  if (!target || !competitor) {
+    return res.status(400).json({ error: 'Missing required fields: target and competitor' });
+  }
   try {
     const response = await axios.post(
       `${BASE_URL}/competitor_analysis/organic`,
-      { keyword },
+      { target, competitor },
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
 // Keyword Research
 router.post('/keyword-research', async (req, res) => {
-  const { keyword } = req.body;
+  const { keywords, location_code = 2840, language_name = 'English' } = req.body;
+  if (!keywords || !Array.isArray(keywords)) {
+    return res.status(400).json({ error: 'Missing or invalid field: keywords (array required)' });
+  }
   try {
     const response = await axios.post(
       `${BASE_URL}/keywords_data/priority`,
-      { keyword },
+      { keywords, location_code, language_name },
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
 // Backlink Tracking
 router.post('/backlink-tracking', async (req, res) => {
-  const { websiteUrl } = req.body;
+  const { site } = req.body;
+  if (!site) {
+    return res.status(400).json({ error: 'Missing required field: site' });
+  }
   try {
     const response = await axios.post(
       `${BASE_URL}/backlinks/tracking`,
-      { url: websiteUrl },
+      { site },
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
