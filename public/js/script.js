@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.tagName === 'LI') {
       currentFeature = e.target.dataset.feature;
 
+      console.log('Selected feature:', currentFeature);
+
       switch (currentFeature) {
         case 'google-business':
           input.placeholder = 'Enter your business name (e.g., My Awesome Business)';
