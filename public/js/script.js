@@ -28,18 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
           input.placeholder = 'Enter a valid website URL (e.g., https://example.com)';
           exampleBox.textContent = 'Example: https://example.com';
           break;
-        case 'competitor-analysis':
-          input.placeholder = 'Enter target and competitor domains (comma-separated)';
-          exampleBox.textContent = 'Example: target.com, competitor.com';
-          break;
-        case 'keyword-research':
-          input.placeholder = 'Enter keywords separated by commas (e.g., keyword1, keyword2)';
-          exampleBox.textContent = 'Example: keyword1, keyword2';
-          break;
-        case 'backlink-tracking':
+        case 'backlinks':
           input.placeholder = 'Enter a valid website URL (e.g., https://example.com)';
           exampleBox.textContent = 'Example: https://example.com';
           break;
+        case 'keywords-data':
+          input.placeholder = 'Enter keywords separated by commas (e.g., keyword1, keyword2)';
+          exampleBox.textContent = 'Example: keyword1, keyword2';
+          break;
+        default:
+          input.placeholder = 'Enter your input';
+          exampleBox.textContent = '';
       }
 
       errorMessage.style.display = 'none';
@@ -67,20 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!userInput.startsWith('http')) throw new Error('Invalid URL format.');
           payload = { site: userInput };
           break;
-        case 'competitor-analysis':
-          const [target, competitor] = userInput.split(',').map((item) => item.trim());
-          if (!target || !competitor) throw new Error('Both target and competitor domains are required.');
-          payload = { target, competitor };
-          break;
-        case 'keyword-research':
-          const keywords = userInput.split(',').map((item) => item.trim());
-          if (keywords.length === 0) throw new Error('At least one keyword is required.');
-          payload = { keywords };
-          break;
-        case 'backlink-tracking':
+        case 'backlinks':
           if (!userInput.startsWith('http')) throw new Error('Invalid URL format.');
           payload = { site: userInput };
           break;
+        case 'keywords-data':
+          const keywords = userInput.split(',').map((item) => item.trim());
+          if (keywords.length === 0) throw new Error('At least one keyword is required.');
+          payload = { keywords, location_code: 2840, language_name: 'English' };
+          break;
+        default:
+          throw new Error('Unknown feature selected.');
       }
 
       const response = await fetch(`/api/seo/${currentFeature}`, {
