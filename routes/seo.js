@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-// Sandbox API Base URL
+// Base URL for Sandbox API
 const BASE_URL = 'https://sandbox.dataforseo.com/v3';
 
 // Authorization Helper
@@ -20,7 +20,14 @@ const wrapPayloadInArray = (payload) => {
   return Array.isArray(payload) ? payload : [payload];
 };
 
-// Route: Google Business Profile API
+// Logging Middleware
+router.use((req, res, next) => {
+  console.log(`Incoming Request: ${req.method} ${req.originalUrl}`);
+  console.log(`Request Body:`, req.body);
+  next();
+});
+
+// Google Business Profile API
 router.post('/google-business', async (req, res) => {
   const { businessName } = req.body;
   if (!businessName) {
@@ -28,18 +35,21 @@ router.post('/google-business', async (req, res) => {
   }
   try {
     const payload = { businessName };
+    console.log('Payload for Google Business:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/business_profile/task_post`,
-      payload,
+      wrapPayloadInArray(payload),
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Google Business API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
-// Route: On-Page SEO API
+// On-Page SEO API
 router.post('/on-page-seo', async (req, res) => {
   const { site, limit = 10 } = req.body;
   if (!site) {
@@ -47,25 +57,30 @@ router.post('/on-page-seo', async (req, res) => {
   }
   try {
     const payload = { site, limit };
+    console.log('Payload for On-Page SEO:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/on_page/task_post`,
-      payload,
+      wrapPayloadInArray(payload),
       { headers: getHeaders() }
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with On-Page SEO API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
-// Route: Backlinks API
+// Backlinks API
 router.post('/backlinks', async (req, res) => {
   const { site } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
   }
   try {
-    const payload = wrapPayloadInArray([{ site }]);
+    const payload = wrapPayloadInArray({ site });
+    console.log('Payload for Backlinks:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/backlinks/task_post`,
       payload,
@@ -73,11 +88,12 @@ router.post('/backlinks', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Backlinks API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
 
-// Route: Keywords Data API
+// Keywords Data API
 router.post('/keywords-data', async (req, res) => {
   const { keywords, location_code, language_name = 'English' } = req.body;
   if (!keywords || !Array.isArray(keywords) || !location_code) {
@@ -93,6 +109,8 @@ router.post('/keywords-data', async (req, res) => {
         language_name,
       }))
     );
+    console.log('Payload for Keywords Data API:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/keywords_data/google/search_volume/task_post`,
       payload,
@@ -100,6 +118,7 @@ router.post('/keywords-data', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
+    console.error('Error with Keywords Data API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
