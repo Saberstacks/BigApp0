@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(`/api/seo/${currentFeature}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [currentFeature === 'competitor-analysis' ? 'keyword' : 'websiteUrl']: userInput }),
+        body: JSON.stringify({ site: userInput }),
       });
       const data = await response.json();
       results.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
