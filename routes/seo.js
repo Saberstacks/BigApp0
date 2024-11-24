@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
+// Sandbox Base URL
 const BASE_URL = 'https://sandbox.dataforseo.com/v3';
 
 // Helper function to generate Authorization header
@@ -12,6 +13,8 @@ const getHeaders = () => {
     Authorization: `Basic ${encodedAuthString}`,
   };
 };
+
+// Routes
 
 // Google Business Profile Audit
 router.post('/google-business', async (req, res) => {
