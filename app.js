@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API routes
+// Routes
 app.use('/api/seo', seoRoutes);
 
 // Start server
