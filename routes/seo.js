@@ -39,8 +39,6 @@ router.post('/keywords-data', async (req, res) => {
         language_name,
       }))
     );
-    console.log('Payload for Keywords Data API:', payload);
-
     const response = await axios.post(
       `${BASE_URL}/keywords_data/google/search_volume/task_post`,
       payload,
@@ -48,7 +46,6 @@ router.post('/keywords-data', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error('Error with Keywords Data API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -61,8 +58,6 @@ router.post('/on-page-seo', async (req, res) => {
   }
   try {
     const payload = { site, limit, pingback_url };
-    console.log('Payload for On-Page SEO API:', payload);
-
     const response = await axios.post(
       `${BASE_URL}/on_page/task_post`,
       payload,
@@ -70,7 +65,6 @@ router.post('/on-page-seo', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error('Error with On-Page SEO API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -83,8 +77,6 @@ router.post('/backlinks', async (req, res) => {
   }
   try {
     const payload = wrapPayloadInArray([{ site, date_range, type }]);
-    console.log('Payload for Backlinks API:', payload);
-
     const response = await axios.post(
       `${BASE_URL}/backlinks/task_post`,
       payload,
@@ -92,7 +84,6 @@ router.post('/backlinks', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error('Error with Backlinks API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
@@ -105,8 +96,6 @@ router.post('/google-business', async (req, res) => {
   }
   try {
     const payload = { businessName, category, location };
-    console.log('Payload for Google Business API:', payload);
-
     const response = await axios.post(
       `${BASE_URL}/business_profile/task_post`,
       payload,
@@ -114,31 +103,7 @@ router.post('/google-business', async (req, res) => {
     );
     res.json(response.data);
   } catch (error) {
-    console.error('Error with Google Business API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
-
-// Business Data API (Example)
-router.post('/business-data', async (req, res) => {
-  const { businessName, location } = req.body;
-  if (!businessName) {
-    return res.status(400).json({ error: 'Missing required field: businessName' });
-  }
-  try {
-    const payload = { businessName, location };
-    console.log('Payload for Business Data API:', payload);
-
-    const response = await axios.post(
-      `${BASE_URL}/business_data/task_post`,
-      payload,
-      { headers: getHeaders() }
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error with Business Data API:', error.response?.data || error.message);
-    res.status(500).json({ error: error.response?.data || error.message });
-  }
-});
-
 module.exports = router;
