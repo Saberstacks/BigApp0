@@ -10,13 +10,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json()); // Parse JSON payloads
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
 app.use('/api/seo', seoRoutes);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
