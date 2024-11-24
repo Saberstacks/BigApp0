@@ -11,11 +11,15 @@ const getHeaders = () => {
   const encodedAuthString = Buffer.from(authString).toString('base64');
   return {
     Authorization: `Basic ${encodedAuthString}`,
+    'Content-Type': 'application/json',
   };
 };
 
-// Helper function to wrap payload in an array if required
+// Helper function to wrap payloads in arrays
 const wrapPayloadInArray = (payload) => {
+  if (!payload || (Array.isArray(payload) && payload.length === 0)) {
+    throw new Error('Payload is empty or invalid.');
+  }
   return Array.isArray(payload) ? payload : [payload];
 };
 
@@ -26,9 +30,12 @@ router.post('/google-business', async (req, res) => {
     return res.status(400).json({ error: 'Missing required field: businessName' });
   }
   try {
+    const payload = { name: businessName };
+    console.log('Payload for Google Business API:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/business_data/google_business_profile`,
-      { name: businessName },
+      payload,
       { headers: getHeaders() }
     );
     res.json(response.data);
@@ -45,9 +52,12 @@ router.post('/on-page-seo', async (req, res) => {
     return res.status(400).json({ error: 'Missing required field: site' });
   }
   try {
+    const payload = { site, limit };
+    console.log('Payload for On-Page SEO API:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/on_page/seo_audit`,
-      { site, limit },
+      payload,
       { headers: getHeaders() }
     );
     res.json(response.data);
@@ -64,9 +74,12 @@ router.post('/competitor-analysis', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields: target and competitor' });
   }
   try {
+    const payload = { target, competitor };
+    console.log('Payload for Competitor Analysis API:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/competitor_analysis/organic`,
-      { target, competitor },
+      payload,
       { headers: getHeaders() }
     );
     res.json(response.data);
@@ -83,9 +96,18 @@ router.post('/keyword-research', async (req, res) => {
     return res.status(400).json({ error: 'Missing or invalid field: keywords (array required)' });
   }
   try {
+    const payload = wrapPayloadInArray(
+      keywords.map((keyword) => ({
+        keyword,
+        location_code,
+        language_name,
+      }))
+    );
+    console.log('Payload for Keyword Research API:', payload);
+
     const response = await axios.post(
       `${BASE_URL}/keywords_data/priority`,
-      { keywords, location_code, language_name },
+      payload,
       { headers: getHeaders() }
     );
     res.json(response.data);
@@ -95,19 +117,47 @@ router.post('/keyword-research', async (req, res) => {
   }
 });
 
-// Backlink Tracking
+// SERP API (Rank Tracker)
+router.post('/serp-api', async (req, res) => {
+  const { location_code, keyword, language_name = 'English' } = req.body;
+  if (!location_code || !keyword) {
+    return res.status(400).json({ error: 'Missing required fields: location_code and keyword.' });
+  }
+  try {
+    const payload = wrapPayloadInArray({
+      location_code,
+      keyword,
+      language_name,
+    });
+    console.log('Payload for SERP API:', payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/serp/google/organic/task_post`,
+      payload,
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error with SERP API:', error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Backlink Tracking (Mock Response for Sandbox)
 router.post('/backlink-tracking', async (req, res) => {
   const { site } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
   }
   try {
-    const response = await axios.post(
-      `${BASE_URL}/backlinks/tracking`,
-      wrapPayloadInArray({ site }), // Backlink tracking might expect tasks
-      { headers: getHeaders() }
-    );
-    res.json(response.data);
+    const payload = wrapPayloadInArray({ site });
+    console.log('Payload for Backlink Tracking API:', payload);
+
+    // Mock response as this might not be supported in the sandbox
+    res.json({
+      mock: true,
+      message: 'Backlink Tracking is not available in sandbox mode. This is a mock response.',
+    });
   } catch (error) {
     console.error('Error with Backlink Tracking API:', error.response?.data || error.message);
     res.status(500).json({ error: error.response?.data || error.message });
