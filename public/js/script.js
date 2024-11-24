@@ -4,13 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('feature-input');
   const results = document.getElementById('results');
   const errorMessage = document.createElement('p');
+  const exampleBox = document.createElement('div');
+
   errorMessage.style.color = 'red';
   errorMessage.style.display = 'none';
+  exampleBox.style.color = 'green';
+  exampleBox.style.marginTop = '10px';
   form.appendChild(errorMessage);
+  form.appendChild(exampleBox);
 
   let currentFeature = '';
 
-  // Update input placeholder and validation based on selected feature
+  // Update input placeholder, validation, and examples dynamically
   featureList.addEventListener('click', (e) => {
     if (e.target.tagName === 'LI') {
       currentFeature = e.target.dataset.feature;
@@ -19,25 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
         case 'google-business':
           input.placeholder = 'Enter your business name (e.g., My Awesome Business)';
           input.type = 'text';
+          exampleBox.textContent = 'Example: My Awesome Business';
           break;
         case 'on-page-seo':
           input.placeholder = 'Enter a valid website URL (e.g., https://example.com)';
           input.type = 'url';
+          exampleBox.textContent = 'Example: https://example.com';
           break;
         case 'competitor-analysis':
-          input.placeholder = 'Enter the target domain and competitor domain (comma-separated)';
+          input.placeholder = 'Enter target and competitor domains (comma-separated)';
           input.type = 'text';
+          exampleBox.textContent = 'Example: target.com, competitor.com';
           break;
         case 'keyword-research':
           input.placeholder = 'Enter keywords separated by commas (e.g., keyword1, keyword2)';
           input.type = 'text';
+          exampleBox.textContent = 'Example: keyword1, keyword2';
           break;
         case 'backlink-tracking':
           input.placeholder = 'Enter a valid website URL (e.g., https://example.com)';
           input.type = 'url';
+          exampleBox.textContent = 'Example: https://example.com';
           break;
         default:
           input.placeholder = 'Enter your input';
+          exampleBox.textContent = '';
       }
 
       errorMessage.style.display = 'none';
