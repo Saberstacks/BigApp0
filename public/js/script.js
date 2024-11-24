@@ -37,8 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
           exampleBox.textContent = 'Example: keyword1, keyword2';
           break;
         default:
-          input.placeholder = 'Enter your input';
-          exampleBox.textContent = '';
+          errorMessage.textContent = 'Unknown feature selected.';
+          errorMessage.style.display = 'block';
+          return;
       }
 
       errorMessage.style.display = 'none';
