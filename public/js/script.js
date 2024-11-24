@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   featureList.addEventListener('click', (e) => {
     if (e.target.tagName === 'LI') {
       currentFeature = e.target.dataset.feature;
+      console.log('Selected Feature:', currentFeature);
 
       switch (currentFeature) {
         case 'google-business':
@@ -52,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const userInput = input.value.trim();
+    console.log('User Input:', userInput);
 
     if (!currentFeature || !userInput) {
       errorMessage.textContent = 'Please fill in the required fields before submitting.';
