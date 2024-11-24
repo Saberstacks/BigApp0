@@ -2,10 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-// Base URL for Sandbox API
+// Sandbox API Base URL
 const BASE_URL = 'https://sandbox.dataforseo.com/v3';
 
-// Helper function to generate Authorization header
+// Authorization Helper
 const getHeaders = () => {
   const authString = `${process.env.DATAFORSEO_API_LOGIN}:${process.env.DATAFORSEO_API_PASSWORD}`;
   const encodedAuthString = Buffer.from(authString).toString('base64');
@@ -15,33 +15,21 @@ const getHeaders = () => {
   };
 };
 
-// Helper function to wrap payloads in arrays
+// Universal Payload Wrapper
 const wrapPayloadInArray = (payload) => {
-  if (!payload || (Array.isArray(payload) && payload.length === 0)) {
-    throw new Error('Payload is empty or invalid.');
-  }
   return Array.isArray(payload) ? payload : [payload];
 };
 
-// Keywords Data API
-router.post('/keywords-data', async (req, res) => {
-  console.log('Route hit: /keywords-data');
-  const { keywords, location_code, language_name = 'English' } = req.body;
-  if (!keywords || !Array.isArray(keywords) || !location_code) {
-    return res.status(400).json({
-      error: 'Missing or invalid fields: keywords (array required) and location_code.',
-    });
+// Route: Google Business Profile API
+router.post('/google-business', async (req, res) => {
+  const { businessName } = req.body;
+  if (!businessName) {
+    return res.status(400).json({ error: 'Missing required field: businessName' });
   }
   try {
-    const payload = wrapPayloadInArray(
-      keywords.map((keyword) => ({
-        keyword,
-        location_code,
-        language_name,
-      }))
-    );
+    const payload = { businessName };
     const response = await axios.post(
-      `${BASE_URL}/keywords_data/google/search_volume/task_post`,
+      `${BASE_URL}/business_profile/task_post`,
       payload,
       { headers: getHeaders() }
     );
@@ -51,9 +39,8 @@ router.post('/keywords-data', async (req, res) => {
   }
 });
 
-// On-Page SEO API
+// Route: On-Page SEO API
 router.post('/on-page-seo', async (req, res) => {
-  console.log('Route hit: /on-page-seo');
   const { site, limit = 10 } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
@@ -71,9 +58,8 @@ router.post('/on-page-seo', async (req, res) => {
   }
 });
 
-// Backlinks API
+// Route: Backlinks API
 router.post('/backlinks', async (req, res) => {
-  console.log('Route hit: /backlinks');
   const { site } = req.body;
   if (!site) {
     return res.status(400).json({ error: 'Missing required field: site' });
@@ -91,17 +77,24 @@ router.post('/backlinks', async (req, res) => {
   }
 });
 
-// Google Business Profile API
-router.post('/google-business', async (req, res) => {
-  console.log('Route hit: /google-business');
-  const { businessName } = req.body;
-  if (!businessName) {
-    return res.status(400).json({ error: 'Missing required field: businessName' });
+// Route: Keywords Data API
+router.post('/keywords-data', async (req, res) => {
+  const { keywords, location_code, language_name = 'English' } = req.body;
+  if (!keywords || !Array.isArray(keywords) || !location_code) {
+    return res.status(400).json({
+      error: 'Missing or invalid fields: keywords (array required) and location_code.',
+    });
   }
   try {
-    const payload = { businessName };
+    const payload = wrapPayloadInArray(
+      keywords.map((keyword) => ({
+        keyword,
+        location_code,
+        language_name,
+      }))
+    );
     const response = await axios.post(
-      `${BASE_URL}/business_profile/task_post`,
+      `${BASE_URL}/keywords_data/google/search_volume/task_post`,
       payload,
       { headers: getHeaders() }
     );
